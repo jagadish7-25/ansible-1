@@ -1,6 +1,6 @@
 ---
 - name: Deploy Kubernetes Blog Website
-  hosts: webservers
+  hosts: all
   become: yes
 
   tasks:
