@@ -1,0 +1,12 @@
+---
+- name: variables example
+  hosts: all
+  become: yes
+  vars:
+    L1: "I AM"
+    L2: "LEARNING ANSIBLE"
+    L3: "WITH DEVOPS"
+  tasks:
+    - name: Print variables
+      ansible.builtin.debug:
+        msg: HI "{{ L1 }} {{ L2 }} {{ L3 }}"
