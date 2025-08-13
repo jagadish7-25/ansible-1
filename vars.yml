@@ -2,10 +2,8 @@
 - name: variables example
   hosts: all
   become: yes
-  vars:
-    L1: "I AM"
-    L2: "LEARNING ANSIBLE"
-    L3: "WITH DEVOPS"
+  vars_files:
+    - samplevars.yml
   tasks:
     - name: Print variables
       ansible.builtin.debug:
