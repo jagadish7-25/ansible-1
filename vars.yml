@@ -13,6 +13,6 @@
 
     - name: Print task level variable
       ansible.builtin.debug:
-        msg: "Task level variable: {{ task_var }}"
+        msg: "Task level variable: {{ L1 }}"
       vars:
-        task_var: "This is a task level variable"
+        L1: "This is a task level variable"
