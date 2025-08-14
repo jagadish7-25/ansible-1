@@ -1,0 +1,14 @@
+---
+- name: check a number is less than 25
+  hosts: all
+  become: yes
+  vars_prompt:
+  - name: number
+    prompt: "Enter a number"
+    private: no
+  tasks:
+    - name: Check if number is less than 25
+      ansible.builtin.debug:
+        msg: "The number {{ number }} is less than 25"
+      when: number < 25
+      
