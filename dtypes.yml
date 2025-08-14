@@ -4,7 +4,7 @@
   become: yes
   vars:
     - course: Devops
-    - duration: 120 days
+    - duration: 130 days
     - topics: 
         - Ansible
         - Docker
