@@ -1,0 +1,19 @@
+---
+- name: installing multiple software using loop
+  hosts: web
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Install multiple packages
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - httpd
+        - git
+        - nginx
+      register: install_result
+
+    - name: Print installation result
+      ansible.builtin.debug:
+        msg: "Installed packages: {{ install_result.results | map(attribute='item') | list }}"
