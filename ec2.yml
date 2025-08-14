@@ -4,10 +4,10 @@
   gather_facts: false
   become: false
   vars:
-    instance-type: t2.micro
+    instance_type: t2.micro
     region: us-east-1
-    subnet-id: subnet-0b389fe30c579ad9c
-    security-groups: sg-0be7adb2ad7cb90c6
+    subnet_id: subnet-0b389fe30c579ad9c
+    security_groups: sg-0be7adb2ad7cb90c6
     instances:
       - mysql
       - backend
@@ -18,10 +18,10 @@
       amazon.aws.ec2_instance:
         name: "{{ item }}"
         image_id: ami-0b4f379183e5706b9
-        instance_type: "{{ instance-type }}"
+        instance_type: "{{ instance_type }}"
         region: "{{ region }}"
-        vpc_subnet_id: "{{ subnet-id }}"
-        security_groups: "{{ security-groups }}"
+        vpc_subnet_id: "{{ subnet_id }}"
+        security_groups: "{{ security_groups }}"
         wait: yes
       register: ec2_instance
       loop: "{{ instances }}"
