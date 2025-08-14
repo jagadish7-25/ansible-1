@@ -1,0 +1,12 @@
+---
+- name: using shell commands in ansible
+  hosts: all
+  become: yes
+  tasks:
+    - name: Execute a shell command
+      ansible.builtin.shell: netstat -lntp
+      register: shell_output
+
+    - name: Display the output of the shell command
+      ansible.builtin.debug:
+        msg: "The output of the shell command is: {{ shell_output.stdout }}"
