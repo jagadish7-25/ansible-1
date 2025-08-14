@@ -24,13 +24,11 @@
         vpc_subnet_id: "{{ subnet_id }}"
         security_groups: "{{ security_groups }}"
         wait: yes
-      register: ec2_instance
       loop: "{{ instances }}"
+      register: ec2_instances
 
     - name: Print ip address of created instances
       ansible.builtin.debug:
-        msg: "Instance {{ item.item }} created with IP address {{ item.instance.public_ip }}"
-      loop: "{{ ec2_instance.results }}"
-      when: item.instance is defined and item.instance.public_ip is defined
-
+        msg: "instance {{ ec2_instances}}"
+        
     
