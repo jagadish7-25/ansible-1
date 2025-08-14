@@ -1,0 +1,35 @@
+---
+- name: creating ec2 instance 
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    instance-type: t2.micro
+    region: us-east-1
+    subnet-id: subnet-0b389fe30c579ad9c
+    security-groups: sg-0be7adb2ad7cb90c6
+    instances:
+      - mysql
+      - backend
+      - frontend
+
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        name: "{{ item }}"
+        image_id: ami-0b4f379183e5706b9
+        instance_type: "{{ instance-type }}"
+        region: "{{ region }}"
+        vpc_subnet_id: "{{ subnet-id }}"
+        security_groups: "{{ security-groups }}"
+        wait: yes
+      register: ec2_instance
+      loop: "{{ instances }}"
+
+    - name: Print ip address of created instances
+      ansible.builtin.debug:
+        msg: "Instance {{ item.item }} created with IP address {{ item.instance.public_ip }}"
+      loop: "{{ ec2_instance.results }}"
+      when: item.instance is defined and item.instance.public_ip is defined
+
+    
