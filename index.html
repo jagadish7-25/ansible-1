@@ -1,100 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kubernetes Insights Blog</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background: #326ce5;
-            color: #fff;
-            padding: 1rem 0;
-            text-align: center;
-        }
-        nav {
-            background: #224899;
-            display: flex;
-            justify-content: center;
-            padding: 0.5rem;
-        }
-        nav a {
-            color: white;
-            margin: 0 1rem;
-            text-decoration: none;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 1rem;
-        }
-        article {
-            background: white;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.1);
-        }
-        article h2 {
-            color: #326ce5;
-        }
-        footer {
-            background: #224899;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RGB Color Guessing Game</title>
+<style>
+  :root{
+    --bg:#0f1220;
+    --panel:#161a2f;
+    --text:#e7e9f1;
+    --muted:#9aa0b6;
+    --accent:#6ea8fe;
+    --success:#35d07f;
+    --danger:#ff6b6b;
+    --shadow:0 10px 25px rgba(0,0,0,.25);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui, Segoe UI, Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 20% -20%, #1b2040 0%, transparent 60%) , var(--bg);
+    color:var(--text); min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .card{
+    width:min(900px, 96vw);
+    background:linear-gradient(180deg, #191f3a 0%, #0f1327 100%);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.06);
+  }
+  header{
+    padding:20px 22px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:linear-gradient(90deg, rgba(110,168,254,.15), transparent);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .title{
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  }
+  .title h1{ margin:0; font-size:clamp(18px, 2.4vw, 26px); letter-spacing:.3px }
+  .target{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background:#0b1024; border:1px solid rgba(255,255,255,.08);
+    padding:6px 10px; border-radius:10px; color:var(--accent);
+  }
+  .controls{
+    display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  }
+  button, .mode{
+    appearance:none; border:1px solid rgba(255,255,255,.15);
+    background:#0e1430; color:var(--text);
+    padding:8px 12px; border-radius:12px; font-weight:600;
+    cursor:pointer; transition:transform .06s ease, background .2s ease, border-color .2s ease;
+  }
+  button:hover, .mode:hover{ transform:translateY(-1px); background:#131a3d; }
+  .mode.active{ border-color:var(--accent); box-shadow:0 0 0 2px rgba(110,168,254,.25) inset; }
+  .stats{ display:flex; gap:12px; align-items:center; color:var(--muted); font-size:.95rem }
+  .pill{
+    padding:6px 10px; border-radius:999px; background:#0b1024; border:1px solid rgba(255,255,255,.08);
+  }
+
+  .board{
+    padding:22px; display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;
+  }
+  .tile{
+    aspect-ratio:1/1; border-radius:16px; border:1px solid rgba(255,255,255,.15);
+    box-shadow:0 12px 24px rgba(0,0,0,.25);
+    position:relative; overflow:hidden; cursor:pointer; transform:translateZ(0);
+  }
+  .tile::after{
+    content:""; position:absolute; inset:0; transition:opacity .2s ease; opacity:0;
+    background: radial-gradient(400px 200px at 10% 0%, rgba(255,255,255,.18), transparent 50%);
+    pointer-events:none;
+  }
+  .tile:hover::after{ opacity:.6; }
+  .tile.disabled{ filter:grayscale(.9) brightness(.6); cursor:not-allowed; }
+
+  .footer{
+    padding:16px 22px; display:flex; justify-content:space-between; align-items:center; gap:12px;
+    border-top:1px solid rgba(255,255,255,.06);
+  }
+  .msg{ min-height:24px; font-weight:600 }
+  .msg.good{ color:var(--success) } .msg.bad{ color:var(--danger) }
+  .hint{ color:var(--muted); font-size:.9rem }
+
+  @media (max-width:680px){
+    .board{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
 </head>
 <body>
+  <main class="card" role="application" aria-label="RGB Color Guessing Game">
+    <header>
+      <div class="title">
+        <h1>RGB Color Guess</h1>
+        <span id="target" class="target" aria-live="polite">rgb(?, ?, ?)</span>
+      </div>
+      <div class="controls">
+        <button id="newGameBtn" type="button">New Colors</button>
+        <button id="easyBtn" class="mode" type="button" aria-pressed="false">Easy</button>
+        <button id="hardBtn" class="mode active" type="button" aria-pressed="true">Hard</button>
+      </div>
+    </header>
 
-<header>
-    <h1>Kubernetes Insights</h1>
-    <p>Your guide to mastering container orchestration</p>
-</header>
+    <section class="board" id="board" aria-live="polite" aria-label="Color options"></section>
 
-<nav>
-    <a href="#">Home</a>
-    <a href="#">Tutorials</a>
-    <a href="#">Best Practices</a>
-    <a href="#">About</a>
-</nav>
+    <div class="footer">
+      <div class="stats">
+        <span class="pill">Score: <strong id="score">0</strong></span>
+        <span class="pill">Streak: <strong id="streak">0</strong></span>
+        <span class="pill">Best: <strong id="best">0</strong></span>
+      </div>
+      <div>
+        <span id="msg" class="msg"></span>
+        <div class="hint">Click the square that matches the RGB value</div>
+      </div>
+    </div>
+  </main>
 
-<div class="container">
-    <article>
-        <h2>Getting Started with Kubernetes</h2>
-        <p>Kubernetes is an open-source platform for automating deployment, scaling, and operations of application containers. 
-        This guide will help you get started with setting up your first Kubernetes cluster.</p>
-        <a href="#">Read more...</a>
-    </article>
+<script>
+(() => {
+  // --- State ---
+  const state = {
+    mode: 'hard',      // 'easy' = 3 tiles, 'hard' = 6 tiles
+    tiles: [],         // array of color strings
+    answer: '',        // correct color string "rgb(r, g, b)"
+    score: 0,
+    streak: 0,
+    best: Number(localStorage.getItem('rgb_best') || 0),
+  };
 
-    <article>
-        <h2>Top 5 Kubernetes Best Practices</h2>
-        <p>From managing resources effectively to securing your cluster, these best practices will help you get the most 
-        out of Kubernetes in production environments.</p>
-        <a href="#">Read more...</a>
-    </article>
+  // --- Elements ---
+  const board = document.getElementById('board');
+  const targetEl = document.getElementById('target');
+  const scoreEl = document.getElementById('score');
+  const streakEl = document.getElementById('streak');
+  const bestEl = document.getElementById('best');
+  const msgEl = document.getElementById('msg');
+  const newGameBtn = document.getElementById('newGameBtn');
+  const easyBtn = document.getElementById('easyBtn');
+  const hardBtn = document.getElementById('hardBtn');
 
-    <article>
-        <h2>Understanding Pods and Deployments</h2>
-        <p>Pods are the smallest deployable units in Kubernetes. Learn how pods, deployments, and replica sets work together 
-        to keep your applications running smoothly.</p>
-        <a href="#">Read more...</a>
-    </article>
-</div>
+  // --- Helpers ---
+  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const rgb = () => `rgb(${rand(0,255)}, ${rand(0,255)}, ${rand(0,255)})`;
 
-<footer>
-    <p>&copy; 2025 Kubernetes Insights Blog | Built for DevOps enthusiasts</p>
-</footer>
+  function generateRound(){
+    const count = state.mode === 'easy' ? 3 : 6;
+    const colors = new Set();
+    while(colors.size < count){ colors.add(rgb()); }
+    state.tiles = [...colors];
+    state.answer = state.tiles[rand(0, state.tiles.length-1)];
+    targetEl.textContent = state.answer;
+    renderTiles();
+    setMessage('');
+  }
 
+  function renderTiles(){
+    board.innerHTML = '';
+    state.tiles.forEach((color, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'tile';
+      btn.style.background = color;
+      btn.setAttribute('aria-label', `Color option ${idx+1}`);
+      btn.addEventListener('click', () => onGuess(color, btn));
+      board.appendChild(btn);
+    });
+  }
+
+  function onGuess(color, el){
+    if (color === state.answer){
+      setMessage('Correct! 🎯', 'good');
+      state.score += 10;
+      state.streak += 1;
+      if (state.streak % 3 === 0) { state.score += 5; } // small streak bonus
+      updateStats();
+      // Paint all tiles the correct color, disable clicks
+      [...board.children].forEach(t => {
+        t.style.background = state.answer;
+        t.classList.add('disabled');
+        t.style.pointerEvents = 'none';
+      });
+      newGameBtn.textContent = 'Play Again';
+    } else {
+      setMessage('Try again ❌', 'bad');
+      state.streak = 0;
+      state.score = Math.max(0, state.score - 2);
+      updateStats();
+      // fade the wrong tile
+      el.classList.add('disabled');
+      el.style.pointerEvents = 'none';
+    }
+  }
+
+  function setMode(mode){
+    state.mode = mode;
+    easyBtn.classList.toggle('active', mode === 'easy');
+    easyBtn.setAttribute('aria-pressed', mode === 'easy');
+    hardBtn.classList.toggle('active', mode === 'hard');
+    hardBtn.setAttribute('aria-pressed', mode === 'hard');
+    newRound();
+  }
+
+  function newRound(){
+    newGameBtn.textContent = 'New Colors';
+    generateRound();
+  }
+
+  function setMessage(text, type){
+    msgEl.className = 'msg';
+    if (type === 'good') msgEl.classList.add('good');
+    if (type === 'bad') msgEl.classList.add('bad');
+    msgEl.textContent = text;
+  }
+
+  function updateStats(){
+    scoreEl.textContent = state.score;
+    streakEl.textContent = state.streak;
+    if (state.score > state.best){
+      state.best = state.score;
+      localStorage.setItem('rgb_best', String(state.best));
+    }
+    bestEl.textContent = state.best;
+  }
+
+  // --- Events ---
+  newGameBtn.addEventListener('click', newRound);
+  easyBtn.addEventListener('click', () => setMode('easy'));
+  hardBtn.addEventListener('click', () => setMode('hard'));
+
+  // --- Init ---
+  updateStats();
+  generateRound();
+})();
+</script>
 </body>
 </html>

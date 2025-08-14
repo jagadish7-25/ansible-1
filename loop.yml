@@ -17,3 +17,16 @@
     - name: Print installation result
       ansible.builtin.debug:
         msg: "Installed packages: {{ install_result.results | map(attribute='item') | list }}"
+
+
+    - name: start nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+    
+    - name: copy index.html file
+      ansible.builtin.copy:
+        src: /root/ansible-1/index.html
+        dest: /usr/share/nginx/html/index.html
+      when: install_result is changed
