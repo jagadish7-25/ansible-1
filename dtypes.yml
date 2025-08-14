@@ -1,6 +1,7 @@
 ---
 - name: using datatypes in ansible
   hosts: all
+  connection: local
   become: yes
   vars:
     - course: Devops
