@@ -15,8 +15,8 @@
 
 - name: Print Nginx status
   ansible.builtin.debug:
-  msg: "Nginx status: {{ nginx_status }}"
+    msg: "Nginx status: {{ nginx_status }}"
 
 - name: print variables
   ansible.builtin.debug:
-    msg:"nginx is insatlled by {{ devops_engineer}} and {{ project_name}} with {{ user_id}}"
+    msg: "nginx is insatlled by {{ devops_engineer}} and {{ project_name}} with {{ user_id}}"
