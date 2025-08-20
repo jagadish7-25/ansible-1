@@ -11,15 +11,15 @@
     - mysql
     - backend
     - frontend
-    zone: chocojohns.bar
+    zone: daws81s.online
   tasks:
+  #
   - name: create ec2 instance
     amazon.aws.ec2_instance:
       name: "{{ item }}"
       vpc_subnet_id: "{{ subnet_id }}"
-      instance_type: "t2.micro"
-      security_group: 
-        - "{{ sg_id }}"
+      instance_type: "{% if item == 'mysql' %}t3.micro{% else %}t2.micro{% endif %}"
+      security_group: "{{ sg_id }}"
       image_id: "{{ ami_id }}"
     loop: "{{ instances }}"
     register: ec2_instances
