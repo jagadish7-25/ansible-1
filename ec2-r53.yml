@@ -14,7 +14,7 @@
     zone: chocojohns.bar
   tasks:
   - name: ansible to install boto3 and botocore
-    ansible.builtin.yum:
+    ansible.builtin.pip:
       name:
       - boto3
       - botocore
@@ -24,7 +24,8 @@
       name: "{{ item }}"
       vpc_subnet_id: "{{ subnet_id }}"
       instance_type: "t2.micro"
-      security_group: "{{ sg_id }}"
+      security_group: 
+        - "{{ sg_id }}"
       image_id: "{{ ami_id }}"
     loop: "{{ instances }}"
     register: ec2_instances
