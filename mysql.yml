@@ -7,8 +7,7 @@
   tasks:
   - name: Enable Python 3.9 module
     ansible.builtin.shell: dnf module enable -y python39
-    args:
-      warn: false
+    
   - name: Install Python 3.9
     ansible.builtin.yum:
       name: python39
