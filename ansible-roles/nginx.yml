@@ -1,5 +1,5 @@
 ---
-- name: nginx
+- name: nginx installation
   hosts: web
   become: true
   roles:
