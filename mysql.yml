@@ -5,14 +5,27 @@
     mysql_root_password: ExpenseApp@1
     login_host: mysql.chocojohns.bar
   tasks:
-  - name: install python3.9
-    ansible.builtin.package:
-      name: python3.9
+  - name: Enable Python 3.9 module
+    ansible.builtin.shell: dnf module enable -y python39
+    args:
+      warn: false
+  - name: Install Python 3.9
+    ansible.builtin.yum:
+      name: python39
       state: present
-  - name: install pip3.9
-    ansible.builtin.package:
-      name: python3.9-pip
-      state: present
+  - name: Install pip for Python 3.9
+    ansible.builtin.shell: |
+      python3.9 -m ensurepip --upgrade || curl -sS https://bootstrap.pypa.io/get-pip.py | python3.9
+    args:
+      creates: /usr/bin/pip3.9
+  - name: Verify pip3.9 installation
+    ansible.builtin.command: python3.9 -m pip --version
+    register: pip_version
+
+  - name: Ensure pip3.9 is installed
+    ansible.builtin.debug:
+      msg: "Installed pip version: {{ pip_version.stdout }}"
+
   - name: ansible to install pymysql
     ansible.builtin.pip:
       name:
