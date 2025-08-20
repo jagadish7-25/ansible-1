@@ -15,7 +15,7 @@
 
 - name: Print Nginx status
   ansible.builtin.debug:
-  msg: "Nginx status: {{ nginx_status.stdout }}"
+  msg: "Nginx status: {{ nginx_status }}"
 
 - name: print variables
   ansible.builtin.debug:
