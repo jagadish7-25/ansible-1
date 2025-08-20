@@ -5,6 +5,14 @@
     mysql_root_password: ExpenseApp@1
     login_host: mysql.chocojohns.bar
   tasks:
+  - name: install python3.9
+    ansible.builtin.package:
+      name: python3.9
+      state: present
+  - name: install pip3.9
+    ansible.builtin.package:
+      name: python3.9-pip
+      state: present
   - name: ansible to install pymysql
     ansible.builtin.pip:
       name:
