@@ -10,9 +10,12 @@
     instances:
     - mysql
     - backend
-    - frontend
     zone: chocojohns.bar
-  tasks:
+  - name: Ensure pip is installed on CentOS 8
+    ansible.builtin.yum:
+      name: python3-pip
+      state: present
+    when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version'] == "8"
   - name: ansible to install boto3 and botocore
     ansible.builtin.pip:
       name:
