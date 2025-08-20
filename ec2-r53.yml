@@ -14,7 +14,7 @@
     zone: chocojohns.bar
   tasks:
   - name: ansible to install boto3 and botocore
-    ansible.builtin.pip:
+    ansible.builtin.yum:
       name:
       - boto3
       - botocore
