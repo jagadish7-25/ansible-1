@@ -1,0 +1,17 @@
+---
+  - name: Install Nginx
+    ansible.builtin.package:
+      name: nginx
+      state: present
+      
+  - name: Copy source code to web server
+    ansible.builtin.copy:
+      src: /root/ansible-1/ansiroles2/index.html
+      dest: /usr/share/nginx/html/index.html
+     
+    
+  - name: Ensure Nginx is running
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
+      enabled: yes
